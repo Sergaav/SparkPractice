@@ -1,6 +1,7 @@
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+
 import static org.apache.spark.sql.functions.*;
 
 public class Main {
@@ -17,8 +18,9 @@ public class Main {
                 .option("header", "true").csv("/home/serha/sparkHomework/Teams.csv");
 
         Dataset<Row> awardsCount = awardsTable.groupBy("playerID").count();
-        Dataset<Row> goalsCount = scoringTable.groupBy("playerID").agg(sum("G"));
-        awardsCount.join(goalsCount,"playerID").show();
-
+        Dataset<Row> goalsCount = scoringTable.groupBy("playerID").agg(sum("G").as("goals"));
+        awardsCount.join(goalsCount, "playerID").sort(desc("goals"));
+        masterTable.join(scoringTable, "playerID")
+                .join(teamsTable, "tmID").groupBy("playerID");
     }
 }
