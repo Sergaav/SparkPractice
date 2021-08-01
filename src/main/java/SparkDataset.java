@@ -23,6 +23,7 @@ public class SparkDataset {
     public static Dataset<Row> dataTransformation(Dataset<Row> awardsTable, Dataset<Row> scoringTable, Dataset<Row> masterTable, Dataset<Row> teamsTable) {
         Dataset<Row> awardsCount = awardsTable.groupBy("playerID").count().as("Awards");
         Dataset<Row> goalsCount = scoringTable.groupBy("playerID").agg(sum("G").as("Goals"));
+        goalsCount.explain();
         Dataset<Row> countGoals = awardsCount.join(goalsCount, "playerID").sort(desc("Goals"));
 
         Dataset<Row> playerGoals = countGoals.join(masterTable, "playerId")
